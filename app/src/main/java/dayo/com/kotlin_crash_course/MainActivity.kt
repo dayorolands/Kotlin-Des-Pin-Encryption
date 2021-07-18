@@ -1,7 +1,16 @@
 package dayo.com.kotlin_crash_course
 
 import android.os.Bundle
+import android.view.View
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import dayo.com.kotlin_crash_course.BlackBoxLogicClass.BlackBoxLogic
+import dayo.com.kotlin_crash_course.BlackBoxLogicClass.byteArrayToHexString
+import dayo.com.kotlin_crash_course.BlackBoxLogicClass.hexStringToByteArray
+import dayo.com.kotlin_crash_course.Constants.productionValue
+import dayo.com.kotlin_crash_course.XORorAndorORClass.XORorANDorORfunction
+import org.w3c.dom.Text
 import java.io.ByteArrayOutputStream
 import java.security.spec.KeySpec
 import java.util.*
@@ -16,15 +25,70 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val pinBlock = DesEncryptDukpt(
-            workingKey = getSessionKey(),
-            pan = "1234567890123456",
-            clearPin = "1234"
-        )
-        println("****************The expected value of the pinblock is: $pinBlock")
+
+        var ipekValue = findViewById<EditText>(R.id.ipekValue)
+        var ksnValue = findViewById<EditText>(R.id.ksnValue)
+
+        val switchButton = findViewById<Switch>(R.id.switchKeys)
+        val switchText = findViewById<TextView>(R.id.switchTexts)
+        switchButton.setOnCheckedChangeListener { compoundButton, _ ->
+
+            if(compoundButton.isChecked) {
+                switchText.setText(productionValue).toString()
+                ipekValue.setText(Constants.productionIpek).toString()
+                ksnValue.setText(Constants.productionKsn).toString()
+            }
+            else{
+                switchText.setText(Constants.testValue).toString()
+                ipekValue.setText(Constants.testIpek).toString()
+                ksnValue.setText(Constants.testKsn).toString()
+            }
+        }
+
+        val workingKeyButton = findViewById<Button>(R.id.workingKeyBut)
+        workingKeyButton.setOnClickListener{
+            workingKeyFunction();
+        }
+
+//        val pinBlock = DesEncryptDukpt(
+//            workingKey = getSessionKey(),
+//            pan = "5399419000144402",
+//            clearPin = "4562"
+//        )
+//        println("****************The expected value of the pinblock is: $pinBlock")
+        //Production IPEK: 3F2216D8297BCE9C Production KSN: 0000000002DDDDE00000
+        //Test IPEK: 9F8011E7E71E483B KSN: 0000000006DDDDE01500
     }
 
-    fun getSessionKey(IPEK: String = "9F8011E7E71E483B", KSN: String = "0000000006DDDDE01500"): String {
+    private fun workingKeyFunction() {
+        var ipekValue = findViewById<EditText>(R.id.ipekValue)
+        var ksnValue = findViewById<EditText>(R.id.ksnValue)
+        if (ksnValue.length() != 20)
+            Toast.makeText(this, "KSN must be 10bytes", Toast.LENGTH_SHORT).show()
+        if (ipekValue.length() == 16 || ipekValue.length() == 32) {
+            val ksnCounterValue = findViewById<EditText>(R.id.ksnCountValue)
+            if (ksnCounterValue.getText().toString().isEmpty()) {
+                Toast.makeText(this,"KSN Counter cannot be empty", Toast.LENGTH_SHORT).show()
+            }
+            val ksnLength = ksnValue.getText().toString().length
+            val ksnCounterLength = ksnCounterValue.length()
+            println("The expected value of the ksn counter length is $ksnCounterLength")
+            val neededValue = ksnLength - ksnCounterLength
+            val ksnNewValue = ksnValue.getText().substring(0, neededValue) + ksnCounterValue.getText().toString()
+            println("The expected value of the new addition KSN value is $ksnNewValue")
+            var ksnValue = ksnNewValue
+            getSessionKey(
+                IPEK = ipekValue.getText().toString(),
+                KSN = ksnValue
+            )
+        }
+        else{
+            Toast.makeText(this, "IPEK must either be 8bytes or 16bytes", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    fun getSessionKey(IPEK: String, KSN: String): String {
         var initialIPEK: String = IPEK
         println("The expected value of the initial IPEK $initialIPEK")
         val ksn = KSN.padStart(20, '0')
@@ -69,74 +133,10 @@ class MainActivity : AppCompatActivity() {
             "00000000000000FF00000000000000FF",
             "^"
         )
+        val workingKeyValue = findViewById<EditText>(R.id.workingKeyValue)
+        workingKeyValue.setText(checkWorkingKey)
         println("*************************The expected value of the working key is $checkWorkingKey")
-        return XORorANDorORfunction(sessionkey, "00000000000000FF00000000000000FF", "^")
-    }
-
-    fun XORorANDorORfunction(valueA: String, valueB: String, symbol: String = "|"): String {
-        val a = valueA.toCharArray()
-        val b = valueB.toCharArray()
-        var result = ""
-
-        for (i in 0 until a.lastIndex + 1) {
-            if (symbol === "|") {
-                result += (Integer.parseInt(a[i].toString(), 16).or
-                    (Integer.parseInt(b[i].toString(), 16)).toString(16).toUpperCase())
-            }
-
-            else if (symbol === "^") {
-                result += (Integer.parseInt(a[i].toString(), 16).xor
-                    (Integer.parseInt(b[i].toString(), 16)).toString(16).toUpperCase())
-            }
-
-            else {
-                result += (Integer.parseInt(a[i].toString(), 16).and
-                    (Integer.parseInt(b[i].toString(), 16))).toString(16).toUpperCase()
-            }
-        }
-        return result
-    }
-
-    fun BlackBoxLogic(ksn: String, iPek: String): String {
-        if (iPek.length < 32) {
-            println("The expected value IPEK $iPek and IKSN is $ksn")
-            val msg = XORorANDorORfunction(iPek, ksn, "^")
-            println("The expected value of the msg is $msg")
-            val desreslt = desEncrypt(msg, iPek)
-            println("The expected value of the desresult is $desreslt")
-            val rsesskey = XORorANDorORfunction(desreslt, iPek, "^")
-            println("The expected value of the session key during BBL is $rsesskey")
-            return rsesskey
-        }
-        val current_sk = iPek
-        val ksn_mod = ksn
-        val leftIpek =
-            XORorANDorORfunction(
-                current_sk,
-                "FFFFFFFFFFFFFFFF0000000000000000",
-                "&"
-            ).substring(16)
-        val rightIpek =
-            XORorANDorORfunction(current_sk, "0000000000000000FFFFFFFFFFFFFFFF", "&").substring(16)
-        val message = XORorANDorORfunction(rightIpek, ksn_mod, "^")
-        val desresult = desEncrypt(message, leftIpek)
-        val rightSessionKey = XORorANDorORfunction(desresult, rightIpek, "^")
-        val resultCurrent_sk =
-            XORorANDorORfunction(current_sk, "C0C0C0C000000000C0C0C0C000000000", "^")
-        val leftIpek2 = XORorANDorORfunction(
-            resultCurrent_sk,
-            "FFFFFFFFFFFFFFFF0000000000000000",
-            "&"
-        ).substring(0, 16)
-        val rightIpek2 = XORorANDorORfunction(
-            resultCurrent_sk,
-            "0000000000000000FFFFFFFFFFFFFFFF",
-            "&"
-        ).substring(16)
-        val message2 = XORorANDorORfunction(rightIpek2, ksn_mod, "^")
-        val desresult2 = desEncrypt(message2, leftIpek2)
-        val leftSessionKey = XORorANDorORfunction(desresult2, rightIpek2, "^")
-        return leftSessionKey + rightSessionKey
+        return XORorAndorORClass.XORorANDorORfunction(sessionkey, "00000000000000FF00000000000000FF", "^")
     }
 
     fun encryptPinBlock(pan: String, pin: String): String {
@@ -144,38 +144,7 @@ class MainActivity : AppCompatActivity() {
         println("The expected value of the encrypted pan is $pan")
         val pin = '0' + pin.length.toString(16) + pin.padEnd(16, 'F')
         println("The expected value of the clear pin is $pin")
-        return XORorANDorORfunction(pan, pin, "^")
-    }
-
-    fun hexStringToByteArray(key: String) : ByteArray {
-        var result:ByteArray = ByteArray(0)
-        for (i in 0 until key.length step 2) {
-            result += Integer.parseInt(key.substring(i, (i + 2)), 16).toByte()
-        }
-        return result
-    }
-
-    fun byteArrayToHexString(key: ByteArray) : String {
-        var st = ""
-        for (b in key) {
-            st += String.format("%02X", b)
-        }
-        return st
-    }
-
-    private fun desEncrypt(desData: String, key: String): String {
-        val keyData = hexStringToByteArray(key)
-        val bout = ByteArrayOutputStream()
-        try {
-            val keySpec: KeySpec = DESKeySpec(keyData)
-            val key: SecretKey = SecretKeyFactory.getInstance("DES").generateSecret(keySpec)
-            val cipher: Cipher = Cipher.getInstance("DES/ECB/PKCS5Padding")
-            cipher.init(Cipher.ENCRYPT_MODE, key)
-            bout.write(cipher.doFinal(hexStringToByteArray(desData)))
-        } catch (e: Exception) {
-            print("Exception DES Encryption.. " + e.printStackTrace())
-        }
-        return byteArrayToHexString(bout.toByteArray()).substring(0, 16)
+        return XORorANDorORfunction(pan, pin, "^") //the clear pinblock is returned here
     }
 
     fun DesEncryptDukpt(workingKey: String, pan: String, clearPin: String): String {
