@@ -20,7 +20,7 @@ android {
                 variant.outputs.all{
                     def date = new Date()
                     def formattedDate = date.format('yyMMddHHmmss')
-                    String appName = "kotlin-app"
+                    String appName = "Pin-Enryption"
                     outputFileName = "${appName}-${variant.versionName}-${formattedDate}.apk"
                 }
         }
