@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">kotlin-crash-course</string>
+    <string name="app_name">DUKPT PIN ENCRYPTION</string>
+    <string name="working_key">WORKING KEY</string>
+    <string name="working_key_val">WORKING KEY</string>
+    <string name="card_pan">CARD PAN</string>
+    <string name="card_pin">CARD PIN</string>
+    <string name="generate_pinblock">GENERATE PINBLOCK</string>
+    <string name="ksn_counter">KSN COUNTER</string>
+    <string name="ksn">KSN</string>
+    <string name="ipek">IPEK</string>
+    <string name="pinblock">PINBLOCK</string>
 </resources>

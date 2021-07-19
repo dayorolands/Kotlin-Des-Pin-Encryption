@@ -50,6 +50,12 @@ class MainActivity : AppCompatActivity() {
             workingKeyFunction();
         }
 
+        val encryptButton = findViewById<Button>(R.id.encryptButton)
+        encryptButton.setOnClickListener(){
+            generatePinblock()
+        }
+
+
 //        val pinBlock = DesEncryptDukpt(
 //            workingKey = getSessionKey(),
 //            pan = "5399419000144402",
@@ -58,6 +64,18 @@ class MainActivity : AppCompatActivity() {
 //        println("****************The expected value of the pinblock is: $pinBlock")
         //Production IPEK: 3F2216D8297BCE9C Production KSN: 0000000002DDDDE00000
         //Test IPEK: 9F8011E7E71E483B KSN: 0000000006DDDDE01500
+    }
+
+    private fun generatePinblock() {
+        var workingKeyVal = findViewById<EditText>(R.id.workingKeyValue)
+        val clearPan = findViewById<EditText>(R.id.clearPan)
+        val clearPinBlock = findViewById<EditText>(R.id.clearPin)
+        if (clearPan.length() < 16 || clearPan.length() > 19){
+            Toast.makeText(this, "Pan should be between 16 and 19 digits", Toast.LENGTH_SHORT).show()
+        }
+        DesEncryptDukpt(workingKey = workingKeyVal.getText().toString(),
+            pan = clearPan.getText().toString(),
+            clearPin = clearPinBlock.getText().toString())
     }
 
     private fun workingKeyFunction() {
@@ -86,7 +104,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "IPEK must either be 8bytes or 16bytes", Toast.LENGTH_SHORT).show()
         }
     }
-
 
     fun getSessionKey(IPEK: String, KSN: String): String {
         var initialIPEK: String = IPEK
@@ -147,7 +164,7 @@ class MainActivity : AppCompatActivity() {
         return XORorANDorORfunction(pan, pin, "^") //the clear pinblock is returned here
     }
 
-    fun DesEncryptDukpt(workingKey: String, pan: String, clearPin: String): String {
+    fun DesEncryptDukpt(workingKey: String, pan: String, clearPin: String) {
         val pinBlock = XORorANDorORfunction(workingKey, encryptPinBlock(pan, clearPin), "^")
         val keyData = hexStringToByteArray(workingKey)
         val bout = ByteArrayOutputStream()
@@ -160,12 +177,15 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             println("Exception .. " + e.message)
         }
-        return XORorANDorORfunction(
+        val encryptPin = XORorANDorORfunction(
             workingKey, byteArrayToHexString(bout.toByteArray()).substring(
                 0,
                 16
             ), "^"
         )
+        println("****************The expected value of the pinblock is: $encryptPin")
+        val encryptedPinblock = findViewById<EditText>(R.id.pinBlock)
+        encryptedPinblock.setText(encryptPin)
     }
 
 }

@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textColor="@color/black"
-            android:hint="IPEK"
+            android:hint="@string/ipek"
             android:text=""
             />
 
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textColor="@color/black"
-            android:hint="KSN"
+            android:hint="@string/ksn"
             android:layout_marginTop="10dp"
             android:text=""
             />
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textColor="@color/black"
-            android:hint="KSN COUNTER"
+            android:hint="@string/ksn_counter"
             android:text=""
             />
 
@@ -71,15 +71,16 @@
 
         </LinearLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/workingKeyBut"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:shadowColor="@color/black"
-            android:layout_marginLeft="210sp"
+            android:layout_height="55dp"
+            android:layout_marginStart="210sp"
             android:layout_marginTop="20dp"
-            android:text="WORKING KEY"
-            android:textColor="@color/white" />
+            app:cornerRadius="17dp"
+            android:text="@string/working_key"
+            android:shadowColor="@color/black"
+            android:textColor="@color/white"/>
 
         <EditText
             android:id="@+id/workingKeyValue"
@@ -88,7 +89,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textColor="@color/black"
-            android:hint="WORKING KEY"
+            android:hint="@string/working_key_val"
             android:text=""
             />
 
@@ -104,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textColor="@color/black"
-                android:hint="CARD PAN"
+                android:hint="@string/card_pan"
                 android:text=""
                 />
 
@@ -114,20 +115,31 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textColor="@color/black"
-                android:hint="CARD PIN"
+                android:hint="@string/card_pin"
                 android:text=""
                 />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/encryptButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="55dp"
                 android:shadowColor="@color/black"
-                android:layout_marginLeft="140sp"
+                android:layout_marginStart="85sp"
+                app:cornerRadius="17dp"
                 android:layout_marginTop="20dp"
-                android:text="ENCRYPT"
+                android:text="@string/generate_pinblock"
                 android:textColor="@color/white" />
 
+            <EditText
+                android:id="@+id/pinBlock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginTop="20sp"
+                android:textColor="@color/black"
+                android:hint="@string/pinblock"
+                android:text=""
+                />
         </LinearLayout>
 
 
