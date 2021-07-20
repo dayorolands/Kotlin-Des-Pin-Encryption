@@ -106,6 +106,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:hint="@string/card_pan"
+                android:maxLength="19"
                 android:text=""
                 />
 
@@ -116,6 +117,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:hint="@string/card_pin"
+                android:maxLength="4"
                 android:text=""
                 />
 

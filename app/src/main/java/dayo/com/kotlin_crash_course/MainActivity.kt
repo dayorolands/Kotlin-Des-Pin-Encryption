@@ -73,9 +73,13 @@ class MainActivity : AppCompatActivity() {
         if (clearPan.length() < 16 || clearPan.length() > 19){
             Toast.makeText(this, "Pan should be between 16 and 19 digits", Toast.LENGTH_SHORT).show()
         }
-        DesEncryptDukpt(workingKey = workingKeyVal.getText().toString(),
-            pan = clearPan.getText().toString(),
-            clearPin = clearPinBlock.getText().toString())
+        else {
+            DesEncryptDukpt(
+                workingKey = workingKeyVal.getText().toString(),
+                pan = clearPan.getText().toString(),
+                clearPin = clearPinBlock.getText().toString()
+            )
+        }
     }
 
     private fun workingKeyFunction() {
@@ -153,7 +157,7 @@ class MainActivity : AppCompatActivity() {
         val workingKeyValue = findViewById<EditText>(R.id.workingKeyValue)
         workingKeyValue.setText(checkWorkingKey)
         println("*************************The expected value of the working key is $checkWorkingKey")
-        return XORorAndorORClass.XORorANDorORfunction(sessionkey, "00000000000000FF00000000000000FF", "^")
+        return XORorANDorORfunction(sessionkey, "00000000000000FF00000000000000FF", "^")
     }
 
     fun encryptPinBlock(pan: String, pin: String): String {
