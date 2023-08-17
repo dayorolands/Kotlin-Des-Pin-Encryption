@@ -189,7 +189,7 @@ class MainActivity : AppCompatActivity() {
             ), "^"
         )
         println("****************The expected value of the pinblock is: $encryptPin")
-        val encryptedPinblock = findViewById<EditText>(R.id.pinBlock)
+        val encryptedPinblock = binding.pinBlock
         encryptedPinblock.setText(encryptPin)
     }
 
