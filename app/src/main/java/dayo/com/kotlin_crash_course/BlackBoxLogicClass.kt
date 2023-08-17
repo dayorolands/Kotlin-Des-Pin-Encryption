@@ -6,6 +6,8 @@ import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.DESKeySpec
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 object BlackBoxLogicClass {
 
@@ -77,7 +79,7 @@ object BlackBoxLogicClass {
 
     fun hexStringToByteArray(key: String) : ByteArray {
         var result:ByteArray = ByteArray(0)
-        for (i in 0 until key.length step 2) {
+        for (i in key.indices step 2) {
             result += Integer.parseInt(key.substring(i, (i + 2)), 16).toByte()
         }
         return result

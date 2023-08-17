@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,17 +19,18 @@
             android:id="@+id/ipekValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textColor="@color/black"
+            android:fontFamily="@font/antic"
             android:hint="@string/ipek"
             android:text=""
-            />
+            android:textColor="@color/black"
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/ksnValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
+            android:fontFamily="@font/antic"
             android:textColor="@color/black"
             android:hint="@string/ksn"
             android:layout_marginTop="10dp"
@@ -38,6 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
+            android:fontFamily="@font/antic"
             android:textColor="@color/black"
             android:hint="@string/ksn_counter"
             android:text=""
@@ -57,15 +62,17 @@
                 android:layout_weight="3"
                 android:textSize="20sp"
                 android:textColor="@color/black"
+                android:fontFamily="@font/antic"
                 android:hint="TEST KEYS"
                 android:text=""
                 />
 
-            <Switch
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switchKeys"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
+                android:checked="false"
                 android:padding="10dp"
                 android:textSize="20sp"/>
 
@@ -78,6 +85,7 @@
             android:layout_marginStart="210sp"
             android:layout_marginTop="20dp"
             app:cornerRadius="17dp"
+            android:fontFamily="@font/antic"
             android:text="@string/working_key"
             android:shadowColor="@color/black"
             android:textColor="@color/white"/>
@@ -105,7 +113,9 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textColor="@color/black"
+                android:fontFamily="@font/antic"
                 android:hint="@string/card_pan"
+                android:inputType="number"
                 android:maxLength="19"
                 android:text=""
                 />
@@ -117,6 +127,8 @@
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:hint="@string/card_pin"
+                android:fontFamily="@font/antic"
+                android:inputType="number"
                 android:maxLength="4"
                 android:text=""
                 />
@@ -127,15 +139,16 @@
                 android:layout_height="55dp"
                 android:shadowColor="@color/black"
                 android:layout_marginStart="85sp"
-                app:cornerRadius="17dp"
+                app:cornerRadius="40dp"
                 android:layout_marginTop="20dp"
+                android:fontFamily="@font/antic"
                 android:text="@string/generate_pinblock"
                 android:textColor="@color/white" />
 
             <EditText
                 android:id="@+id/pinBlock"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:textSize="20sp"
                 android:layout_marginTop="20sp"
                 android:textColor="@color/black"
@@ -144,10 +157,8 @@
                 />
         </LinearLayout>
 
-
-
-
     </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

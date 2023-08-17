@@ -1,16 +1,21 @@
 package dayo.com.kotlin_crash_course
 
+import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import dayo.com.kotlin_crash_course.BlackBoxLogicClass.BlackBoxLogic
 import dayo.com.kotlin_crash_course.BlackBoxLogicClass.byteArrayToHexString
 import dayo.com.kotlin_crash_course.BlackBoxLogicClass.hexStringToByteArray
+import dayo.com.kotlin_crash_course.Constants.productionIpek
+import dayo.com.kotlin_crash_course.Constants.productionKsn
 import dayo.com.kotlin_crash_course.Constants.productionValue
+import dayo.com.kotlin_crash_course.Constants.testIpek
+import dayo.com.kotlin_crash_course.Constants.testKsn
+import dayo.com.kotlin_crash_course.Constants.testValue
 import dayo.com.kotlin_crash_course.XORorAndorORClass.XORorANDorORfunction
-import org.w3c.dom.Text
+import dayo.com.kotlin_crash_course.databinding.ActivityMainBinding
 import java.io.ByteArrayOutputStream
 import java.security.spec.KeySpec
 import java.util.*
@@ -21,87 +26,83 @@ import javax.crypto.spec.DESKeySpec
 
 
 class MainActivity : AppCompatActivity() {
+    private var _binding : ActivityMainBinding? = null
+    private val binding get() = _binding!!
+
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        //window.decorView.windowInsetsController!!.hide(android.view.WindowInsets.Type.statusBars())
+        _binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+        populateViewBindingTexts()
+    }
+    private fun populateViewBindingTexts(){
+        val ipekValue = binding.ipekValue
+        val ksnValue = binding.ksnValue
+        val switchButton = binding.switchKeys
+        val switchText = binding.switchTexts
+        val workingKeyButton = binding.workingKeyBut
+        val encryptButton = binding.encryptButton
 
-
-        var ipekValue = findViewById<EditText>(R.id.ipekValue)
-        var ksnValue = findViewById<EditText>(R.id.ksnValue)
-
-        val switchButton = findViewById<Switch>(R.id.switchKeys)
-        val switchText = findViewById<TextView>(R.id.switchTexts)
         switchButton.setOnCheckedChangeListener { compoundButton, _ ->
-
             if(compoundButton.isChecked) {
-                switchText.setText(productionValue).toString()
-                ipekValue.setText(Constants.productionIpek).toString()
-                ksnValue.setText(Constants.productionKsn).toString()
+                switchText.text = productionValue
+                ipekValue.setText(productionIpek).toString()
+                ksnValue.setText(productionKsn).toString()
             }
             else{
-                switchText.setText(Constants.testValue).toString()
-                ipekValue.setText(Constants.testIpek).toString()
-                ksnValue.setText(Constants.testKsn).toString()
+                switchText.text = testValue
+                ipekValue.setText(testIpek).toString()
+                ksnValue.setText(testKsn).toString()
             }
         }
 
-        val workingKeyButton = findViewById<Button>(R.id.workingKeyBut)
         workingKeyButton.setOnClickListener{
             workingKeyFunction();
         }
 
-        val encryptButton = findViewById<Button>(R.id.encryptButton)
         encryptButton.setOnClickListener(){
             generatePinblock()
         }
-
-
-//        val pinBlock = DesEncryptDukpt(
-//            workingKey = getSessionKey(),
-//            pan = "5399419000144402",
-//            clearPin = "4562"
-//        )
-//        println("****************The expected value of the pinblock is: $pinBlock")
-        //Production IPEK: 3F2216D8297BCE9C Production KSN: 0000000002DDDDE00000
-        //Test IPEK: 9F8011E7E71E483B KSN: 0000000006DDDDE01500
     }
-
     private fun generatePinblock() {
-        var workingKeyVal = findViewById<EditText>(R.id.workingKeyValue)
-        val clearPan = findViewById<EditText>(R.id.clearPan)
-        val clearPinBlock = findViewById<EditText>(R.id.clearPin)
+        val workingKeyVal = binding.workingKeyValue
+        val clearPan = binding.clearPan
+        val clearPinBlock = binding.clearPin
         if (clearPan.length() < 16 || clearPan.length() > 19){
             Toast.makeText(this, "Pan should be between 16 and 19 digits", Toast.LENGTH_SHORT).show()
         }
         else {
-            DesEncryptDukpt(
-                workingKey = workingKeyVal.getText().toString(),
-                pan = clearPan.getText().toString(),
-                clearPin = clearPinBlock.getText().toString()
+            desEncryptDukpt(
+                workingKey = workingKeyVal.text.toString(),
+                pan = clearPan.text.toString(),
+                clearPin = clearPinBlock.text.toString()
             )
         }
     }
 
     private fun workingKeyFunction() {
-        var ipekValue = findViewById<EditText>(R.id.ipekValue)
-        var ksnValue = findViewById<EditText>(R.id.ksnValue)
+        val ipekValue = binding.ipekValue
+        val ksnValue = binding.ksnValue
         if (ksnValue.length() != 20)
-            Toast.makeText(this, "KSN must be 10bytes", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this.applicationContext, "KSN must be 10bytes", Toast.LENGTH_SHORT).show()
         if (ipekValue.length() == 16 || ipekValue.length() == 32) {
-            val ksnCounterValue = findViewById<EditText>(R.id.ksnCountValue)
-            if (ksnCounterValue.getText().toString().isEmpty()) {
-                Toast.makeText(this,"KSN Counter cannot be empty", Toast.LENGTH_SHORT).show()
+            val ksnCounterValue = binding.ksnCountValue
+            if (ksnCounterValue.text.toString().isEmpty()) {
+                Toast.makeText(this.applicationContext,"KSN Counter cannot be empty", Toast.LENGTH_SHORT).show()
             }
-            val ksnLength = ksnValue.getText().toString().length
+            val ksnLength = ksnValue.text.toString().length
             val ksnCounterLength = ksnCounterValue.length()
             println("The expected value of the ksn counter length is $ksnCounterLength")
             val neededValue = ksnLength - ksnCounterLength
-            val ksnNewValue = ksnValue.getText().substring(0, neededValue) + ksnCounterValue.getText().toString()
+            val ksnNewValue = ksnValue.text.substring(0, neededValue) + ksnCounterValue.text.toString()
             println("The expected value of the new addition KSN value is $ksnNewValue")
-            var ksnValue = ksnNewValue
+
             getSessionKey(
-                IPEK = ipekValue.getText().toString(),
-                KSN = ksnValue
+                IPEK = ipekValue.text.toString(),
+                KSN = ksnNewValue
             )
         }
         else{
@@ -109,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getSessionKey(IPEK: String, KSN: String): String {
+    private fun getSessionKey(IPEK: String, KSN: String): String {
         var initialIPEK: String = IPEK
         println("The expected value of the initial IPEK $initialIPEK")
         val ksn = KSN.padStart(20, '0')
@@ -126,7 +127,7 @@ class MainActivity : AppCompatActivity() {
         val counterKSNbin = Integer.toBinaryString(counterKSN.toInt())
         println("The expected value of the counter KSN Bin $counterKSNbin")
         var binarycount = counterKSNbin
-        for (i in 0 until counterKSNbin.length) {
+        for (i in counterKSNbin.indices) {
             val len: Int = binarycount.length
             var result = ""
             if (binarycount.substring(0, 1) == "1") {
@@ -160,7 +161,7 @@ class MainActivity : AppCompatActivity() {
         return XORorANDorORfunction(sessionkey, "00000000000000FF00000000000000FF", "^")
     }
 
-    fun encryptPinBlock(pan: String, pin: String): String {
+    private fun encryptPinBlock(pan: String, pin: String): String {
         val pan = pan.substring(pan.length - 13).take(12).padStart(16, '0')
         println("The expected value of the encrypted pan is $pan")
         val pin = '0' + pin.length.toString(16) + pin.padEnd(16, 'F')
@@ -168,7 +169,7 @@ class MainActivity : AppCompatActivity() {
         return XORorANDorORfunction(pan, pin, "^") //the clear pinblock is returned here
     }
 
-    fun DesEncryptDukpt(workingKey: String, pan: String, clearPin: String) {
+    private fun desEncryptDukpt(workingKey: String, pan: String, clearPin: String) {
         val pinBlock = XORorANDorORfunction(workingKey, encryptPinBlock(pan, clearPin), "^")
         val keyData = hexStringToByteArray(workingKey)
         val bout = ByteArrayOutputStream()
@@ -190,6 +191,11 @@ class MainActivity : AppCompatActivity() {
         println("****************The expected value of the pinblock is: $encryptPin")
         val encryptedPinblock = findViewById<EditText>(R.id.pinBlock)
         encryptedPinblock.setText(encryptPin)
+    }
+
+    override fun onDestroy() {
+        _binding = null
+        super.onDestroy()
     }
 
 }
